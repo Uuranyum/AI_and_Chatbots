@@ -10,7 +10,7 @@ import utils.ui_components as ui
 
 # Page settings - MUST BE THE FIRST STREAMLIT COMMAND!
 st.set_page_config(
-    page_title="PDF ve Görüntü OCR Uygulaması",
+    page_title="PDF and Image OCR Application",
     page_icon="📄",
     layout="wide"
 )
