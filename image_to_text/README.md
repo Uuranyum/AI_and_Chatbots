@@ -1,82 +1,82 @@
-# PDF ve Görüntü OCR Uygulaması
+# PDF and Image OCR App
 
-PDF dosyalarını ve görüntüleri metin formatına dönüştürmek için Streamlit tabanlı bir OCR (Optik Karakter Tanıma) uygulaması.
+A Streamlit-based OCR (Optical Character Recognition) application for converting PDF files and images to text format.
 
-## Özellikler
+## Features
 
-- PDF dosyalarını ve görüntüleri (JPG, PNG, TIFF) yükleme ve işleme
-- Türkçe ve İngilizce dil desteği
-- Görüntü önişleme seçenekleri (eşikleme, yeniden boyutlandırma)
-- Sonuçları TXT, DOCX ve PDF formatlarında indirme
-- Görsel analiz ve orijinal/işlenmiş görüntü karşılaştırma
+- Upload and process PDF files and images (JPG, PNG, TIFF)
+- Turkish and English language support
+- Image preprocessing options (thresholding, resizing)
+- Download results in TXT, DOCX and PDF formats
+- Visual analysis and original/processed image comparison
 
-## Gereksinimler
+## Requirements
 
-- Python 3.7 veya üzeri
+- Python 3.7 or higher
 - Tesseract OCR
-- Poppler (PDF işleme için)
-- Python kütüphaneleri (requirements.txt dosyasında listelenmiştir)
+- Poppler (for PDF processing)
+- Python libraries (listed in requirements.txt)
 
-## Kurulum
+## Installation
 
-1. Tesseract OCR'ı yükleyin:
+1. Install Tesseract OCR:
    - Windows: https://github.com/UB-Mannheim/tesseract/wiki
    - Linux: `sudo apt-get install tesseract-ocr tesseract-ocr-tur`
    - Mac: `brew install tesseract`
 
-2. Poppler'ı yükleyin:
+2. Install Poppler:
    - Windows: https://github.com/oschwartz10612/poppler-windows/releases/
    - Linux: `sudo apt-get install poppler-utils`
    - Mac: `brew install poppler`
 
-3. Python bağımlılıklarını yükleyin:
+3. Install Python dependencies:
    ```
    pip install -r requirements.txt
    ```
 
-## Kullanım
+## Usage
 
-1. Uygulamayı başlatın:
+1. Launch the application:
    ```
    streamlit run app.py
    ```
 
-2. Web tarayıcınızda açılan uygulamada:
-   - İşlemek istediğiniz dosya türünü seçin (PDF veya Görüntü)
-   - Dosyanızı yükleyin
-   - OCR işlemini başlatın
-   - Sonuçları görüntüleyin ve indirin
+2. In the application opened in your web browser:
+   - Select the file type you want to process (PDF or Image)
+   - Upload your file
+   - Start the OCR process
+   - View and download results
 
-## Windows Kullanıcıları İçin Notlar
+## Notes for Windows Users
 
-Windows'ta çalıştırırken, Tesseract OCR ve Poppler yollarının doğru ayarlandığından emin olun:
+When running on Windows, make sure that the Tesseract OCR and Poppler paths are set correctly:
 
-1. Tesseract yolu genellikle: `C:\Program Files\Tesseract-OCR\tesseract.exe`
-2. Poppler yolu genellikle: `C:\Program Files\poppler-xx.xx.x\Library\bin`
+1. The Tesseract path is usually: `C:\Program Files\Tesseract-OCR\tesseract.exe`
+2. The Poppler path is usually: `C:\Program Files\poppler-xx.xx.x\Library\bin`
 
-Bu yollar, `app.py` dosyasında ayarlanabilir.
+These paths can be set in the `app.py` file.
 
-## Proje Yapısı
+## Project Structure
 
 ```
 pdf_ocr_app/
-├── app.py                  # Ana uygulama dosyası
+├── app.py # Main application file
 ├── utils/
-│   ├── __init__.py         # Utils paketi
-│   ├── image_processing.py # Görüntü işleme fonksiyonları
-│   ├── ocr_functions.py    # OCR fonksiyonları
-│   ├── file_handling.py    # Dosya işleme fonksiyonları
-│   └── ui_components.py    # Kullanıcı arayüzü bileşenleri
-├── requirements.txt        # Gerekli kütüphaneler
-└── README.md               # Bu dosya
+│ ├── __init__.py # Utils package
+│ ├── image_processing.py # Image processing functions
+│ ├── ocr_functions.py # OCR functions
+│ ├── file_handling.py # File handling functions
+│ └── ui_components.py # User interface components
+├── requirements.txt # Required libraries
+└── README.md # This file
 ```
 
-## Sorun Giderme
+## Troubleshooting
 
-- **Tesseract bulunamadı hatası**: Tesseract'ın doğru şekilde yüklendiğinden ve yolun doğru ayarlandığından emin olun.
-- **Poppler bulunamadı hatası**: Poppler'ın doğru şekilde yüklendiğinden ve yolun doğru olduğundan emin olun.
-- **PDF dönüştürme hataları**: Uygulama, PDF'i işleyemezse alternatif bir metot deneyecektir.
+- **Tesseract not found error**: Make sure the Tesseract is loaded correctly and the path is set correctly.
+- **Poppler not found error**: Make sure Poppler is installed correctly and the path is set correctly.
+- **PDF conversion errors**: If the application cannot process the PDF, it will try an alternative method.
 
-## Dil Desteği
+## Language Support
 
-Varsayılan olarak, uygulama Türkçe ve İngilizce dillerini destekler. Başka diller eklemek için, Tesseract dil dosyalarını yüklemeniz ve UI'da seçenekleri güncellemeniz gerekir. 
+By default, the app supports Turkish and English languages. To add other languages, you need to install Tesseract language files and update options in the UI. 
