@@ -89,3 +89,15 @@ else:
 # Footer
 st.markdown("---")
 st.markdown("PDF OCR App - Easily convert documents to text") 
+
+# Buy Me a Coffee button at the bottom of the page
+st.markdown("---") 
+st.markdown("""
+    <div style='text-align: center; padding: 20px; background-color: #f0f2f6; border-radius: 10px; margin: 20px 0;'>
+        <h3 style='color: #1f77b4;'>If you like the app, you can buy me a coffee! ☕</h3>
+        <a href="https://buymeacoffee.com/ugurdemirkb" target="_blank">
+            <img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee" style="height: 60px !important;width: 217px !important; margin: 10px 0;">
+        </a>
+        <p style='color: #666; font-size: 14px;'>Thank you for your support!</p>
+    </div>
+""", unsafe_allow_html=True) 
