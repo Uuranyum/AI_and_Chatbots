@@ -18,9 +18,9 @@ st.set_page_config(
 # Configure roads
 if platform.system() == "Windows":
     # Set Tesseract OCR path for Windows
-    tesseract_path = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+    tesseract_path = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
     # Set Poppler path for Windows
-    poppler_path = r'C:\\Program Files\\poppler-24.08.0\\\bin'
+    poppler_path = r'C:/Program Files/poppler-24.08.0/bin'
     
     # Send paths to the configuration module
     poppler_found = ocr.configure_paths(tesseract_path, poppler_path)
