@@ -52,7 +52,7 @@ def process_pdf(pdf_file, ocr_lang, preprocessing_options):
             # Windows'ta Poppler yolu belirtilmiş ise kullan
             try:
                 if platform.system() == "Windows":
-                    poppler_path = r'C:\Program Files\poppler-24.08.0\Library\bin'
+                    poppler_path = r'C:\\Program Files\\poppler-24.08.0\\Library\bin'
                     if os.path.exists(poppler_path):
                         images = pdf2image.convert_from_path(temp_pdf_path, poppler_path=poppler_path)
                     else:
@@ -69,7 +69,7 @@ def process_pdf(pdf_file, ocr_lang, preprocessing_options):
                     
                     # Poppler yolu ile doğrudan bytes kullanarak dönüştürme
                     if platform.system() == "Windows":
-                        poppler_path = r'C:\Program Files\poppler-24.08.0\Library\bin'
+                        poppler_path = r'C:\\Program Files\\poppler-24.08.0\\Library\bin'
                         if os.path.exists(poppler_path):
                             images = pdf2image.convert_from_bytes(
                                 pdf_file.getvalue(),
