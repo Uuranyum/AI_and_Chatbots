@@ -4,30 +4,30 @@ from fpdf import FPDF
 
 def save_as_txt(text):
     """
-    Metni TXT dosyası olarak kaydeder
+    Saves text as a TXT file
     
     Args:
-        text: Kaydedilecek metin
+        text Text to save
     
     Returns:
-        bytes: TXT dosyası içeriği
+        bytes TXT file contents
     """
     return text.encode()
 
 def save_as_docx(text):
     """
-    Metni DOCX dosyası olarak kaydeder
+    Saves text as a DOCX file
     
     Args:
-        text: Kaydedilecek metin
+        text Text to save
     
     Returns:
-        bytes: DOCX dosyası içeriği
+        bytes DOCX file contents
     """
     doc = Document()
     doc.add_paragraph(text)
     
-    # docx dosyasını byte array'e dönüştürme
+    # Convert docx file to byte array
     with io.BytesIO() as output:
         doc.save(output)
         output.seek(0)
@@ -35,29 +35,29 @@ def save_as_docx(text):
 
 def save_as_pdf(text):
     """
-    Metni PDF dosyası olarak kaydeder
+    Saves text as PDF file
     
     Args:
-        text: Kaydedilecek metin
+        text Text to save
     
     Returns:
-        bytes: PDF dosyası içeriği
+        bytes PDF file content
     """
-    # PDF oluşturma
+    # PDF creation
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
     
-    # Metni PDF'e yazma (Türkçe karakterler için utf-8)
+    # Write text to PDF (utf-8 for Turkish characters)
     pdf.set_auto_page_break(auto=True, margin=15)
     
-    # Metni satırlara bölelim
+    # Divide the text into lines
     lines = text.split('\n')
     for line in lines:
-        # Türkçe karakterleri desteklemek için encode/decode
+        # Encode/decode to support Turkish characters
         pdf.cell(0, 10, line.encode('latin-1', 'replace').decode('latin-1'), ln=True)
     
-    # PDF'i byte array'e dönüştürme
+    # Convert PDF to byte array
     with io.BytesIO() as output:
         pdf.output(output)
         return output.getvalue() 

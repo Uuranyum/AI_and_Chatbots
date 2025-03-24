@@ -2,19 +2,19 @@ from PIL import Image
 
 def preprocess_image(image, preprocessing_options):
     """
-    Kullanıcı ayarlarına göre görüntüyü ön işleme tabi tutar
+    Pre-processes image according to user settings
     
     Args:
-        image: PIL.Image nesnesi
-        preprocessing_options: Ön işleme seçeneklerini içeren sözlük
+        image PIL.Image object
+        preprocessing_options: Dictionary containing preprocessing options
     
     Returns:
-        PIL.Image: İşlenmiş görüntü
+        PIL.Image: Processed image
     """
-    # Kullanıcı ayarlarına göre önişleme uygula
+    # Apply preprocessing based on user settings
     img = image.copy()
     
-    # Yeniden boyutlandırma
+    # Resizing
     if preprocessing_options.get('apply_resize', False):
         scale_factor = preprocessing_options.get('scale_factor', 1.5)
         width, height = img.size
@@ -22,10 +22,10 @@ def preprocess_image(image, preprocessing_options):
         new_height = int(height * scale_factor)
         img = img.resize((new_width, new_height), Image.LANCZOS)
     
-    # Eşikleme
+    # Thresholding
     if preprocessing_options.get('apply_threshold', False):
         threshold_value = preprocessing_options.get('threshold_value', 128)
-        img = img.convert('L')  # Gri tonlamaya dönüştür
+        img = img.convert('L')  # Convert to grayscale
         img = img.point(lambda x: 0 if x < threshold_value else 255, '1')  # Eşikleme uygula
     
     return img

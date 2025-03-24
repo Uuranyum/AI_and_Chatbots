@@ -2,74 +2,74 @@ import streamlit as st
 import platform
 import os
 
-# Yardımcı modülleri içe aktar
+# Import auxiliary modules
 import utils.image_processing as img_proc
 import utils.ocr_functions as ocr
 import utils.file_handling as file_handler
 import utils.ui_components as ui
 
-# Sayfa ayarları - İLK STREAMLİT KOMUTU OLMALI!
+# Page settings - MUST BE THE FIRST STREAMLIT COMMAND!
 st.set_page_config(
     page_title="PDF ve Görüntü OCR Uygulaması",
     page_icon="📄",
     layout="wide"
 )
 
-# Yolları yapılandır
+# Configure roads
 if platform.system() == "Windows":
-    # Windows için Tesseract OCR yolunu ayarla
-    tesseract_path = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    # Windows için Poppler yolunu ayarla
-    poppler_path = r'C:\Program Files\poppler-24.08.0\Library\bin'
+    # Set Tesseract OCR path for Windows
+    tesseract_path = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+    # Set Poppler path for Windows
+    poppler_path = r'C:\\Program Files\\poppler-24.08.0\\\bin'
     
-    # Yolları yapılandırma modülüne gönder
+    # Send paths to the configuration module
     poppler_found = ocr.configure_paths(tesseract_path, poppler_path)
 else:
-    # Linux/Mac için
+    # For Linux/Mac
     poppler_found = True
 
-# Uygulama başlığı ve açıklama
+# Application title and description
 ui.render_header()
 
-# Poppler durumunu göster
+# Show Poppler status
 if platform.system() == "Windows":
     ui.show_poppler_status(poppler_found, poppler_path)
 
-# Dosya tipi seçimi
+# file type selection
 file_type = st.radio(
-    "İşlemek istediğiniz dosya türünü seçin:",
-    ["PDF", "Görüntü (JPG, PNG)"]
+    "Select the file type you want to process:",
+    ["PDF", "Image (JPG, PNG)"]
 )
 
-# Dosya yükleme
+# File upload
 uploaded_file = ui.render_file_uploader(file_type)
 
-# OCR ayarları
+# OCR settings
 ocr_lang, preprocessing_options = ui.render_sidebar_options()
 
-# Ana uygulama mantığı
+# Main application logic
 if uploaded_file is not None:
-    # Dosya bilgilerini göster
+    # Show file information
     ui.display_file_info(uploaded_file)
     
-    # OCR işlemini başlat butonu
-    if st.button("OCR İşlemini Başlat"):
-        with st.spinner("Dosya işleniyor ve metin çıkarılıyor..."):
+    # Start OCR process button
+    if st.button("Start OCR Process"):
+        with st.spinner("Processing file and extracting text..."):
             try:
-                # Dosya tipine göre işlem yap
+                # Process by file type
                 if file_type == "PDF":
                     text = ocr.process_pdf(uploaded_file, ocr_lang, preprocessing_options)
                 else:
                     text = ocr.process_image(uploaded_file, ocr_lang, preprocessing_options)
                 
-                # Sekme oluşturma
-                tab1, tab2, tab3 = st.tabs(["Metin Çıktısı", "Görsel Analiz", "İndirme Seçenekleri"])
+                # Create a tab
+                tab1, tab2, tab3 = st.tabs(['Text Output', 'Visual Analysis', 'Download Options'])
                 
-                # Metin çıktısı sekmesi
+                # Text output tab
                 with tab1:
                     text = ui.render_text_output_tab(text)
                 
-                # Görsel analiz sekmesi
+                # Visual analysis tab
                 with tab2:
                     ui.render_visual_analysis_tab(
                         file_type, 
@@ -77,15 +77,15 @@ if uploaded_file is not None:
                         preprocessing_options
                     )
                 
-                # İndirme seçenekleri sekmesi
+                # Download options tab
                 with tab3:
                     ui.render_download_options_tab(text, uploaded_file.name)
                     
             except Exception as e:
-                st.error(f"OCR işlemi sırasında bir hata oluştu: {str(e)}")
+                st.error(f"An error occurred during the OCR process: {str(e)}")
 else:
-    st.info("Lütfen OCR işlemi yapmak için bir dosya yükleyin.")
+    st.info("Please upload a file for OCR processing.")
 
 # Footer
 st.markdown("---")
-st.markdown("PDF OCR Uygulaması - Belgeleri kolayca metne dönüştürün") 
+st.markdown("PDF OCR App - Easily convert documents to text") 

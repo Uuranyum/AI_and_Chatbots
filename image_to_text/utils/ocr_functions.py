@@ -10,19 +10,19 @@ from utils.image_processing import preprocess_image
 
 def configure_paths(tesseract_path, poppler_path):
     """
-    Tesseract ve Poppler yollarını yapılandırır
+    Configures Tesseract and Poppler paths
     
     Args:
-        tesseract_path: Tesseract exe dosyasının yolu
-        poppler_path: Poppler bin klasörünün yolu
+        tesseract_path: Path to the tesseract exe file
+        poppler_path: Path to the poppler bin folder
     
     Returns:
-        bool: Poppler yolunun bulunup bulunmadığı
+        bool Whether the Poppler path exists
     """
-    # Tesseract yolunu ayarla
+    # Adjust tesseract path
     pytesseract.pytesseract.tesseract_cmd = tesseract_path
     
-    # Poppler yolunu kontrol et ve ayarla
+    # Check and adjust poppler path
     if os.path.exists(poppler_path):
         os.environ["PATH"] += os.pathsep + poppler_path
         return True
@@ -31,43 +31,43 @@ def configure_paths(tesseract_path, poppler_path):
 
 def process_pdf(pdf_file, ocr_lang, preprocessing_options):
     """
-    PDF dosyasından OCR ile metin çıkarır
+    Extracts text from PDF file with OCR
     
     Args:
-        pdf_file: Yüklenen PDF dosyası
-        ocr_lang: OCR dili
-        preprocessing_options: Ön işleme seçenekleri
+        pdf_file: Uploaded PDF file
+        ocr_lang: OCR language
+        preprocessing_options: Preprocessing options
     
     Returns:
-        str: Çıkarılan metin
+        str: Extracted text
     """
-    # Geçici dosya oluştur
+    # Create temporary file
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
         temp_pdf.write(pdf_file.getvalue())
         temp_pdf_path = temp_pdf.name
     
     try:
-        # PDF'i görüntülere dönüştürme
+        # Convert PDF to images
         with st.spinner("PDF sayfaları görüntülere dönüştürülüyor..."):
-            # Windows'ta Poppler yolu belirtilmiş ise kullan
+            # Use if Poppler path is specified in Windows
             try:
                 if platform.system() == "Windows":
                     poppler_path = r'C:\\Program Files\\poppler-24.08.0\\Library\bin'
                     if os.path.exists(poppler_path):
                         images = pdf2image.convert_from_path(temp_pdf_path, poppler_path=poppler_path)
                     else:
-                        raise Exception("Poppler yolu bulunamadı")
+                        raise Exception("Poppler path not found")
                 else:
                     images = pdf2image.convert_from_path(temp_pdf_path)
                 
-                st.success(f"Toplam {len(images)} sayfa bulundu.")
+                st.success(f"Total {len(images)} pages found.")
             except Exception as e:
-                st.error(f"PDF görüntüye dönüştürülürken hata: {str(e)}")
-                # Alternatif metodu dene
+                st.error(f"Error converting PDF to image: {str(e)}")
+                # Try the alternative method
                 try:
-                    st.warning("Alternatif metot deneniyor...")
+                    st.warning("The alternative method is being tried....")
                     
-                    # Poppler yolu ile doğrudan bytes kullanarak dönüştürme
+                    # Convert using bytes directly via Poppler
                     if platform.system() == "Windows":
                         poppler_path = r'C:\\Program Files\\poppler-24.08.0\\Library\bin'
                         if os.path.exists(poppler_path):
@@ -76,82 +76,82 @@ def process_pdf(pdf_file, ocr_lang, preprocessing_options):
                                 poppler_path=poppler_path
                             )
                         else:
-                            raise Exception("Poppler yolu bulunamadı")
+                            raise Exception("Poppler path not found")
                     else:
                         images = pdf2image.convert_from_bytes(pdf_file.getvalue())
                     
-                    st.success(f"Alternatif metot ile {len(images)} sayfa bulundu.")
+                    st.success(f"Found page {len(images)} with alternative method.")
                 except Exception as e2:
-                    st.error(f"Alternatif metot da başarısız oldu: {str(e2)}")
-                    raise Exception(f"PDF işlenemiyor: {str(e)} / {str(e2)}")
+                    st.error(f"The alternative method also failed: {str(e2)}")
+                    raise Exception(f"Unable to process PDF: {str(e)} / {str(e2)}")
         
-        # İşlem bilgisi gösterimi
+        # Transaction information display
         progress_info = st.empty()
         
-        # Tüm sayfalardan metni çıkarma
+        # Extract text from all pages
         text = ""
         progress_bar = st.progress(0)
         for i, img in enumerate(images):
-            # İşlem durumunu güncelle
-            progress_info.info(f"Sayfa {i+1}/{len(images)} işleniyor...")
+            # Update transaction status
+            progress_info.info(f"Processing page {i+1}/{len(images)}...")
             
-            # Görüntü önişleme uygula
+            # Apply image preprocessing
             processed_img = preprocess_image(img, preprocessing_options)
             
-            # OCR işlemi
+            # OCR process
             page_text = pytesseract.image_to_string(processed_img, lang=ocr_lang)
             text += f"Sayfa {i+1}\n{page_text}\n\n"
             
-            # İlerleme durumunu güncelleme
+            # Update progress status
             progress_bar.progress((i + 1) / len(images))
         
-        progress_info.success("OCR işlemi tamamlandı!")
+        progress_info.success("OCR is complete!")
         return text
     finally:
-        # Geçici dosyayı temizleme
+        # Clear temporary file
         if os.path.exists(temp_pdf_path):
             os.unlink(temp_pdf_path)
 
 def process_image(image_file, ocr_lang, preprocessing_options):
     """
-    Görüntü dosyasından OCR ile metin çıkarır
+    Extracts text from image file with OCR
     
     Args:
-        image_file: Yüklenen görüntü dosyası
-        ocr_lang: OCR dili
-        preprocessing_options: Ön işleme seçenekleri
+        image_file: Uploaded image file
+        ocr_lang: OCR language
+        preprocessing_options: Preprocessing options
     
     Returns:
-        str: Çıkarılan metin
+        str: Extracted text
     """
     try:
-        # Geçici dosya oluştur
+        # Create temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix=f".{image_file.name.split('.')[-1]}") as temp_img:
             temp_img.write(image_file.getvalue())
             temp_img_path = temp_img.name
         
         try:
-            # Görüntüyü okuma
-            with st.spinner("Görüntü işleniyor..."):
+            # Reading the image
+            with st.spinner("Image processing..."):
                 image = Image.open(temp_img_path)
-                st.success("Görüntü başarıyla yüklendi.")
+                st.success("Image uploaded successfully.")
                 
-                # Görüntüyü görüntüle
-                st.image(image, caption="Yüklenen Görüntü", width=400)
+                # View image
+                st.image(image, caption="Uploaded Image", width=400)
                 
-                # Görüntü önişleme uygula
+                # Apply image preprocessing
                 processed_img = preprocess_image(image, preprocessing_options)
                 
-                # OCR işlemi
-                with st.spinner("OCR işlemi yapılıyor..."):
+                # OCR process
+                with st.spinner("OCR processing is in progress..."):
                     text = pytesseract.image_to_string(processed_img, lang=ocr_lang)
-                    st.success("OCR işlemi tamamlandı!")
+                    st.success("OCR is complete!")
                 
                 return text
         finally:
-            # Geçici dosyayı temizleme
+            # Clear temporary filee
             if os.path.exists(temp_img_path):
                 os.unlink(temp_img_path)
     except Exception as e:
-        st.error(f"Görüntü işleme sırasında bir hata oluştu: {str(e)}")
+        st.error(f"An error occurred during image processing: {str(e)}")
         return "" 
