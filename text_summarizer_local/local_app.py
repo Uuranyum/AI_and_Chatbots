@@ -3,7 +3,7 @@ import PyPDF2
 import docx
 import nltk
 import io
-from .local_summarizer import MetinOzetleyici
+from local_summarizer import MetinOzetleyici
 
 # Page configuration
 st.set_page_config(

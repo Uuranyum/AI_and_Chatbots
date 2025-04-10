@@ -14,12 +14,18 @@ Bu proje, PDF, DOCX ve TXT formatındaki Türkçe metinleri yapay zeka kullanmad
 
 ## Kurulum
 
-Gerekli paketleri yükleyin:
+1. Repoyu klonlayın:
+```bash
+git clone https://github.com/Uuranyum/text-summarizer.git
+cd text-summarizer
+```
+
+2. Gerekli paketleri yükleyin:
 ```bash
 pip install -r requirements.txt
 ```
 
-Uygulamayı çalıştırın:
+3. Uygulamayı çalıştırın:
 ```bash
 streamlit run text_summarizer/local_app.py
 ```
@@ -57,4 +63,6 @@ Bu proje MIT lisansı altında lisanslanmıştır. Daha fazla bilgi için `LICEN
 
 ## İletişim
 
-Proje Linki: [https://github.com/Uuranyum/AI_and_Chatbots/tree/main/text_summarizer_local](https://github.com/Uuranyum/AI_and_Chatbots/tree/main/text_summarizer_local) 
+Uğur Demirkaya - [@ugurdemirkb](https://twitter.com/ugurdemirkb)
+
+Proje Linki: [https://github.com/Uuranyum/text-summarizer](https://github.com/Uuranyum/text-summarizer) 
