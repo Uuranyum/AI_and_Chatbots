@@ -1,8 +1,0 @@
-tensorflow-cpu
-streamlit
-tensorflow
-opencv-python-headless
-numpy
-pillow
-pandas
-urllib3
