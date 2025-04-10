@@ -25,9 +25,15 @@ cd text-summarizer
 pip install -r requirements.txt
 ```
 
-3. Uygulamayı çalıştırın:
+3. NLTK verilerini yükleyin:
 ```bash
-streamlit run text_summarizer/local_app.py
+python setup.py
+```
+
+4. Uygulamayı çalıştırın:
+```bash
+cd text_summarizer
+streamlit run local_app.py
 ```
 
 ## Örnek Kullanım
