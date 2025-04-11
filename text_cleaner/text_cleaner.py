@@ -35,33 +35,6 @@ analyzer = zeyrek.MorphAnalyzer()
 # Türkçe stemmer
 stemmer = TurkishStemmer()
 
-# Türkçe lemmatization için sözlük
-TURKISH_LEMMA_DICT = {
-    # İsimler için çekim ekleri
-    'lara': '',    'lere': '',    'ları': '',    'leri': '',
-    'dan': '',     'den': '',     'tan': '',     'ten': '',
-    'da': '',      'de': '',      'ta': '',      'te': '',
-    'nin': '',     'nın': '',     'nun': '',     'nün': '',
-    'ya': '',      'ye': '',      'a': '',       'e': '',
-    'ı': '',       'i': '',       'u': '',       'ü': '',
-    
-    # Fiil çekim ekleri
-    'mak': 'mek',  'mek': 'mek',
-    'yor': 'mek',  'iyor': 'mek', 'üyor': 'mek', 'uyor': 'mek',
-    'acak': 'mek', 'ecek': 'mek',
-    'di': 'mek',   'dı': 'mek',   'du': 'mek',   'dü': 'mek',
-    'ti': 'mek',   'tı': 'mek',   'tu': 'mek',   'tü': 'mek',
-    
-    # Yaygın yapım ekleri
-    'li': '',      'lı': '',      'lu': '',      'lü': '',
-    'siz': '',     'sız': '',     'suz': '',     'süz': '',
-    'çi': '',      'ci': '',      'cı': '',      'cu': '',
-    'lik': '',     'lık': '',     'luk': '',     'lük': '',
-    
-    # Çoğul ekler
-    'ler': '',     'lar': ''
-}
-
 def normalize_turkish_chars(text: str) -> str:
     """Türkçe karakterleri korur ve diğer özel karakterleri temizler."""
     # Türkçe karakterleri koru
@@ -117,31 +90,17 @@ def clean_turkish_text(text: str) -> str:
     
     return text
 
-def turkish_stem(word: str) -> str:
+def turkish_stem(word: str, stem_type: str = 'turkish') -> str:
     """Türkçe kelime kökünü bulur."""
-    return stemmer.stem(word)
-
-def turkish_lemmatize(word: str) -> str:
-    """Türkçe kelime lemmatization."""
-    word = word.lower()
-    original = word
-    
-    # En uzun eki bul ve kaldır
-    while True:
-        found_suffix = False
-        for suffix in TURKISH_LEMMA_DICT:
-            if word.endswith(suffix) and len(word) > len(suffix) + 2:
-                replacement = TURKISH_LEMMA_DICT[suffix]
-                word = word[:-len(suffix)] + replacement
-                found_suffix = True
-                break
-        if not found_suffix:
-            break
-    
-    # Eğer kelime çok kısaldıysa orijinali döndür
-    if len(word) < 3:
-        return original
-    
+    if stem_type == 'none':
+        return word
+    elif stem_type == 'turkish':
+        return stemmer.stem(word)
+    elif stem_type == 'zeyrek':
+        results = analyzer.analyze(word)
+        if results:
+            return results[0][0].lemma
+        return word
     return word
 
 def clean_text(text: str, 
@@ -149,9 +108,12 @@ def clean_text(text: str,
                remove_nums: bool = True,
                remove_puncts: bool = True,
                remove_stopwords: bool = True,
-               do_stemming: bool = True,
-               do_lemmatization: bool = False) -> str:
+               stem_type: str = 'turkish') -> str:
     """Gelişmiş Türkçe metin temizleme fonksiyonu"""
+    
+    # Hiçbiri seçeneği kontrol edilir
+    if stem_type == 'none' and not any([normalize_chars, remove_nums, remove_puncts, remove_stopwords]):
+        return text
     
     # Temel temizlik
     text = clean_turkish_text(text)
@@ -176,11 +138,8 @@ def clean_text(text: str,
         stop_words = get_turkish_stopwords()
         words = [word for word in words if word not in stop_words]
     
-    # Stemming ve Lemmatization seçenekleri
-    if do_stemming and not do_lemmatization:
-        words = [turkish_stem(word) for word in words]
-    elif do_lemmatization and not do_stemming:
-        words = [turkish_lemmatize(word) for word in words]
+    # Stemming/Lemmatization uygula
+    words = [turkish_stem(word, stem_type) for word in words]
     
     return ' '.join(words)
 
@@ -381,20 +340,38 @@ def main():
         
         # Temizleme seçenekleri
         st.sidebar.header("Temizleme Seçenekleri")
-        normalize_chars = st.sidebar.checkbox("Türkçe karakterleri normalize et", value=True)
-        remove_nums = st.sidebar.checkbox("Sayıları temizle", value=True)
-        remove_puncts = st.sidebar.checkbox("Noktalama işaretlerini temizle", value=True)
-        remove_stopwords = st.sidebar.checkbox("Stop words'leri temizle", value=True)
         
-        # Kök bulma seçenekleri
-        st.sidebar.subheader("Kök Bulma Yöntemi")
-        stemming_option = st.sidebar.radio(
-            "Kök Bulma Yöntemi Seçin:",
-            ["Hiçbiri", "Stemming", "Lemmatization"]
-        )
+        # Hiçbiri seçeneği
+        no_cleaning = st.sidebar.checkbox("Hiçbir İşlem Uygulanmasın", value=False)
         
-        do_stemming = stemming_option == "Stemming"
-        do_lemmatization = stemming_option == "Lemmatization"
+        # Eğer "Hiçbiri" seçili değilse diğer seçenekleri göster
+        if not no_cleaning:
+            normalize_chars = st.sidebar.checkbox("Türkçe karakterleri normalize et", value=True)
+            remove_nums = st.sidebar.checkbox("Sayıları temizle", value=True)
+            remove_puncts = st.sidebar.checkbox("Noktalama işaretlerini temizle", value=True)
+            remove_stopwords = st.sidebar.checkbox("Stop words'leri temizle", value=True)
+            
+            # Stemming seçenekleri
+            stem_type = st.sidebar.radio(
+                "Kök Bulma Yöntemi",
+                ['Hiçbiri', 'Turkish Stemmer', 'Zeyrek Lemmatizer'],
+                index=1,
+                help="Turkish Stemmer: Basit kök bulma\nZeyrek: Morfolojik analiz ile kök bulma"
+            )
+            
+            # Seçilen stemming yöntemini dönüştür
+            stem_type = {
+                'Hiçbiri': 'none',
+                'Turkish Stemmer': 'turkish',
+                'Zeyrek Lemmatizer': 'zeyrek'
+            }[stem_type]
+        else:
+            # Hiçbiri seçiliyse tüm seçenekleri kapat
+            normalize_chars = False
+            remove_nums = False
+            remove_puncts = False
+            remove_stopwords = False
+            stem_type = 'none'
         
         # Analiz seçenekleri
         st.sidebar.header("Analiz Seçenekleri")
@@ -411,8 +388,7 @@ def main():
             remove_nums=remove_nums,
             remove_puncts=remove_puncts,
             remove_stopwords=remove_stopwords,
-            do_stemming=do_stemming,
-            do_lemmatization=do_lemmatization
+            stem_type=stem_type
         )
         
         st.subheader("Temizlenmiş Metin")
@@ -495,8 +471,7 @@ def main():
                 remove_nums=remove_nums,
                 remove_puncts=remove_puncts,
                 remove_stopwords=remove_stopwords,
-                do_stemming=do_stemming,
-                do_lemmatization=do_lemmatization
+                stem_type=stem_type
             )
             
             comparison_data = compare_texts(cleaned_text, cleaned_text2)
@@ -517,12 +492,12 @@ def main():
                     'comparison': comparison_data if compare_mode and uploaded_file2 else {}
                 },
                 {
+                    'no_cleaning': no_cleaning,
                     'normalize_chars': normalize_chars,
                     'remove_nums': remove_nums,
                     'remove_puncts': remove_puncts,
                     'remove_stopwords': remove_stopwords,
-                    'do_stemming': do_stemming,
-                    'do_lemmatization': do_lemmatization
+                    'stem_type': stem_type
                 }
             )
             
