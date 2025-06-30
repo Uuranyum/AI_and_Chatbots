@@ -1,0 +1,14 @@
+# Türkçe Dosya Özetleme Sistemi - Gereksinimler
+# ==============================================
+
+# Ana framework
+streamlit>=1.28.0
+
+# PDF işleme
+PyPDF2>=3.0.0
+
+# Word belge işleme  
+python-docx>=0.8.11
+
+# Metin işleme için ek kütüphaneler (isteğe bağlı)
+# regex zaten Python ile gelir, ek kütüphane gerekmez 
